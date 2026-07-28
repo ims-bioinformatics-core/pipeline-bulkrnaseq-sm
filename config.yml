@@ -1,0 +1,32 @@
+
+dir_flag: "results_raw"
+run_dir: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/pipelines/pipeline-bulkrnaseq-sm"
+filepaths: "inputs/filepaths.csv"  
+metadata: "inputs/metadata.csv"   
+multiqc_mode: "interactive"
+trimming_method: "illumina"
+star_index: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/genome/ensembl/homo_sapiens/release-113" 
+annotation: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/genome/ensembl/homo_sapiens/release-113/gene_annotation.tsv" 
+strandness: 3           
+sam_format: "BAM"
+sam_sort: "SortedByCoordinate"
+sam_strand_field: "intronMotif" 
+filter_score: 0.1 
+filter_match: 0.1 
+quant_mode: "GeneCounts"
+pca_col_cat: "Condition 1,Sample sex" 
+pca_col_cat_reference: "untreated,F"
+pca_col_num: "Batch" 
+dge_cat: "Condition 1"
+dge_cat_reference: "untreated"
+lfc_threshold: 1.0
+padj_threshold: 0.05
+group_mode: false
+#group_mode: true
+split_by: "Sample sex"
+groups:
+  - F
+  - M
+norm: "cpm" 
+filt: TRUE
+

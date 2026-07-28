@@ -1,0 +1,29 @@
+name: dge_env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - r-base=4.3
+  - r-optparse
+  - r-tidyverse
+  - r-ggplot2
+  - r-matrixstats
+  - bioconductor-deseq2
+  - bioconductor-genomeinfodbdata
+  - bioconductor-biomart       # Added biomaRt
+  - r-devtools        # optional, useful if you need to install packages from source
+  - r-biocmanager     # optional, easier Bioconductor management
+  - r-data.table      # optional, fast table handling
+  - r-pheatmap        # optional, heatmaps for RNA-seq
+  - r-ggrepel         # optional, better text labels in PCA
+  - libxml2           # system dependency for some R packages
+  - zlib
+  - bzip2
+  - xz
+  - curl
+  - openssl
+  - readline
+  - bioconductor-complexheatmap
+  - r-circlize

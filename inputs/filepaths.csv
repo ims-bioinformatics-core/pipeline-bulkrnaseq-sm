@@ -1,0 +1,3 @@
+Barcode,fastq_1,fastq_2
+UDI001,raw_data/SLX-11111.UDI001.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI001.AAA111.r_2.fq.gz
+UDI002,raw_data/SLX-11111.UDI002.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI002.AAA111.r_2.fq.gz
