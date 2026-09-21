@@ -145,11 +145,30 @@ id_to_symbol <- setNames(
 )
 
 # ---------------------------
-# 4. Sex markers
+# 4. Sex markers (species-aware)
 # ---------------------------
-female_markers <- c("XIST")
+# Decide species from the Ensembl gene ID prefix in the annotation:
+#   ENSG........  -> human, symbols in UPPER CASE
+#   ENSMUSG.....  -> mouse, symbols in Title Case
+n_human <- sum(grepl("^ENSG[0-9]", annot$ensembl_gene_id))
+n_mouse <- sum(grepl("^ENSMUSG[0-9]", annot$ensembl_gene_id))
 
-male_markers <- c(
+species <- if (n_mouse > n_human) {
+  "mouse"
+} else if (n_human > 0) {
+  "human"
+} else {
+  "unknown"
+}
+
+cat(
+  "\u2139\ufe0f Detected species:", species,
+  sprintf("(ENSG: %d, ENSMUSG: %d)\n", n_human, n_mouse)
+)
+
+human_female_markers <- c("XIST")
+
+human_male_markers <- c(
   "SRY",
   "DDX3Y",
   "EIF2S3Y",
@@ -157,16 +176,56 @@ male_markers <- c(
   "ZFY"
 )
 
+mouse_female_markers <- c("Xist")
+
+mouse_male_markers <- c(
+  "Sry",
+  "Ddx3y",
+  "Eif2s3y",
+  "Uty",
+  "Zfy1",
+  "Zfy2"
+)
+
+if (species == "mouse") {
+
+  female_markers <- mouse_female_markers
+  male_markers   <- mouse_male_markers
+
+} else if (species == "human") {
+
+  female_markers <- human_female_markers
+  male_markers   <- human_male_markers
+
+} else {
+
+  # no recognisable Ensembl prefix: accept either naming, matched case-insensitively
+  cat("\u26a0\ufe0f No ENSG/ENSMUSG prefix found - matching both human and mouse symbols\n")
+
+  female_markers <- c(human_female_markers, mouse_female_markers)
+  male_markers   <- c(human_male_markers, mouse_male_markers)
+}
+
 sex_markers <- c(
   female_markers,
   male_markers
 )
 
 sex_annot <- annot[
-  annot$gene_symbol %in% sex_markers,
+  if (species == "unknown") {
+    toupper(annot$gene_symbol) %in% toupper(sex_markers)
+  } else {
+    annot$gene_symbol %in% sex_markers
+  },
   ,
   drop = FALSE
 ]
+
+cat(
+  "\u2139\ufe0f Sex markers matched in annotation:",
+  if (nrow(sex_annot) == 0) "none" else paste(sort(unique(sex_annot$gene_symbol)), collapse = ", "),
+  "\n"
+)
 
 # =========================================================
 # NO SEX GENES FOUND -> SAVE EMPTY FIGURE
@@ -307,9 +366,8 @@ counts_sex_log <- log10(
 # ---------------------------
 # 7. Metadata annotation
 # ---------------------------
-colnames(metadata)[
-  colnames(metadata) == "Sex"
-] <- "sex"
+sex_col <- intersect(c("Sex", "sex", "Sample Sex"), colnames(metadata))[1]
+metadata$sex <- metadata[[sex_col]]
 
 metadata$sex <- trimws(metadata$sex)
 

@@ -54,7 +54,7 @@ def load_metadata(path):
 
     start_idx = None
     for i, line in enumerate(lines):
-        if "Sample name" in line and "Sex" in line:
+        if "Sample Name" in line and "Sample Sex" in line:
             start_idx = i
             break
 

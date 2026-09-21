@@ -12,7 +12,7 @@ from pathlib import Path
 parser = argparse.ArgumentParser()
 parser.add_argument("--logs", nargs="+", required=True)
 parser.add_argument("--metadata", required=True)
-parser.add_argument("--dge_cat", required=True)
+parser.add_argument("--mapping_check_cat", required=True)
 parser.add_argument("--out", required=True)
 
 args = parser.parse_args()
@@ -72,19 +72,19 @@ df = df.merge(meta, on="sample", how="left")
 # -----------------------------
 # Use CLI argument as grouping column
 # -----------------------------
-group_col = args.dge_cat
+group_col = args.mapping_check_cat
 
 if group_col not in df.columns:
     raise ValueError(
         f"'{group_col}' not found in metadata.\nAvailable columns:\n{list(df.columns)}"
     )
 
-df["dge_cat"] = df[group_col].astype(str).fillna("Unknown")
+df["mapping_check_cat"] = df[group_col].astype(str).fillna("Unknown")
 
 # -----------------------------
 # Group ordering
 # -----------------------------
-group_order = sorted(df["dge_cat"].unique())
+group_order = sorted(df["mapping_check_cat"].unique())
 
 # -----------------------------
 # Build plotting order with gaps
@@ -97,7 +97,7 @@ gap = 1.2
 y = 0
 
 for g in group_order:
-    sub = df[df["dge_cat"] == g].sort_values("unique", ascending=False)
+    sub = df[df["mapping_check_cat"] == g].sort_values("unique", ascending=False)
 
     start_y = y
 
@@ -160,7 +160,7 @@ plt.xlim(0, x_max * 1.15)
 # Labels
 # -----------------------------
 plt.xlabel("Number of reads")
-plt.title("STAR alignment summary (grouped by dge_cat)")
+plt.title("STAR alignment summary (grouped by mapping_check_cat)")
 
 # -----------------------------
 # Legend (BOTTOM)
