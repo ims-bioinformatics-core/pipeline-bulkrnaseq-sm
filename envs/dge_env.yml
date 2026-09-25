@@ -27,3 +27,11 @@ dependencies:
   - readline
   - bioconductor-complexheatmap
   - r-circlize
+  - r-patchwork
+  - r-viridis
+  - r-vcd
+  # pathway analysis (run_gsea_pathway.R)
+  - bioconductor-annotationdbi
+  - bioconductor-clusterprofiler
+  - bioconductor-org.mm.eg.db
+  - bioconductor-reactomepa

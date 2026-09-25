@@ -4,7 +4,7 @@ run_dir: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/pipelines/p
 filepaths: "inputs/filepaths.csv"  
 metadata: "inputs/metadata.csv"   
 multiqc_mode: "interactive"
-trimming_method: "illumina"
+trimming_method: "illumina"      # illumina | nextera | first
 star_index: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/genome/ensembl/homo_sapiens/release-113" 
 annotation: "/home/mk2314/rds/rds-genehunter-O11U8YqSuCk/bioinformatics/genome/ensembl/homo_sapiens/release-113/gene_annotation.tsv" 
 strandness: 3           
@@ -18,7 +18,8 @@ pca_col_cat: "Condition 1,Sample sex"
 pca_col_cat_reference: "untreated,F"
 pca_col_num: "Batch" 
 dge_cat: "Condition 1"
-dge_cat_reference: "untreated"
+dge_comparisons:                 # NUMERATOR_vs_REFERENCE: REFERENCE (levels of dge_cat)
+  treated_vs_untreated: "untreated"
 lfc_threshold: 1.0
 padj_threshold: 0.05
 group_mode: false
@@ -29,4 +30,19 @@ groups:
   - M
 norm: "cpm" 
 filt: TRUE
+
+# QC plot grouping
+mapping_check_cat: "Condition 1"
+sample_check_cat: "Condition 1"
+gene_list: "GAPDH,ACTB"          # comma-separated gene symbols; must not be empty
+
+# Pathway analysis (GSEA) - currently mouse only
+pathway_organism: "mouse"
+pathway_databases:
+  - GO
+  - KEGG
+  - REACTOME
+pathway_min_genes: 10
+pathway_max_genes: 500
+pathway_gsea_fdr: 0.05
 
