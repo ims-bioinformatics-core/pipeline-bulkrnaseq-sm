@@ -1,3 +1,4 @@
+
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages({
@@ -40,7 +41,11 @@ option_list <- list(
     )
 )
 
-opt <- parse_args(OptionParser(option_list = option_list))
+opt <- parse_args(
+    OptionParser(
+        option_list = option_list
+    )
+)
 
 cat("\n")
 cat("=============================================\n")
@@ -80,11 +85,21 @@ print(head(colnames(counts), 10))
 
 gene_id_col <- colnames(counts)[1]
 
-cat("\nGene ID column: ", gene_id_col, "\n", sep = "")
+cat(
+    "\nGene ID column: ",
+    gene_id_col,
+    "\n",
+    sep = ""
+)
 
 sample_names <- colnames(counts)[-1]
 
-cat("Number of samples: ", length(sample_names), "\n", sep = "")
+cat(
+    "Number of samples: ",
+    length(sample_names),
+    "\n",
+    sep = ""
+)
 
 if (any(sample_names == "")) {
     stop("Counts contain empty sample column names.")
@@ -140,7 +155,9 @@ if (any(colnames(metadata) == "")) {
 }
 
 if (!"Barcode" %in% colnames(metadata)) {
-    stop("Metadata must contain a 'Barcode' column.")
+    stop(
+        "Metadata must contain a 'Barcode' column."
+    )
 }
 
 if (!opt$group %in% colnames(metadata)) {
@@ -151,12 +168,18 @@ if (!opt$group %in% colnames(metadata)) {
 }
 
 metadata_use <- data.frame(
-    Barcode = as.character(metadata[["Barcode"]]),
-    Group = as.character(metadata[[opt$group]]),
+    Barcode = as.character(
+        metadata[["Barcode"]]
+    ),
+    Group = as.character(
+        metadata[[opt$group]]
+    ),
     stringsAsFactors = FALSE
 )
 
-metadata_use$Barcode <- trimws(metadata_use$Barcode)
+metadata_use$Barcode <- trimws(
+    metadata_use$Barcode
+)
 
 # Remove completely empty barcode rows
 metadata_use <- metadata_use[
@@ -197,7 +220,11 @@ if (length(common_samples) == 0) {
 }
 
 if (length(common_samples) < length(sample_names)) {
-    missing_metadata <- setdiff(sample_names, common_samples)
+
+    missing_metadata <- setdiff(
+        sample_names,
+        common_samples
+    )
 
     cat("\nSamples missing from metadata:\n")
     print(missing_metadata)
@@ -211,7 +238,10 @@ counts <- counts[
 ]
 
 metadata_use <- metadata_use[
-    match(common_samples, metadata_use$Barcode),
+    match(
+        common_samples,
+        metadata_use$Barcode
+    ),
     ,
     drop = FALSE
 ]
@@ -223,7 +253,9 @@ if (!identical(
     colnames(counts)[-1],
     metadata_use$Barcode
 )) {
-    stop("Sample ordering mismatch between counts and metadata.")
+    stop(
+        "Sample ordering mismatch between counts and metadata."
+    )
 }
 
 
@@ -252,27 +284,39 @@ missing_annotation_columns <- setdiff(
 if (length(missing_annotation_columns) > 0) {
     stop(
         "Annotation is missing required column(s): ",
-        paste(missing_annotation_columns, collapse = ", ")
+        paste(
+            missing_annotation_columns,
+            collapse = ", "
+        )
     )
 }
 
 annotation <- annotation[
     ,
-    c("ensembl_gene_id", "gene_symbol"),
+    c(
+        "ensembl_gene_id",
+        "gene_symbol"
+    ),
     drop = FALSE
 ]
 
 annotation$ensembl_gene_id <- sub(
     "\\..*$",
     "",
-    as.character(annotation$ensembl_gene_id)
+    as.character(
+        annotation$ensembl_gene_id
+    )
 )
 
-annotation$gene_symbol <- as.character(annotation$gene_symbol)
+annotation$gene_symbol <- as.character(
+    annotation$gene_symbol
+)
 
 # Remove duplicate Ensembl IDs
 annotation <- annotation[
-    !duplicated(annotation$ensembl_gene_id),
+    !duplicated(
+        annotation$ensembl_gene_id
+    ),
     ,
     drop = FALSE
 ]
@@ -290,21 +334,30 @@ gene_symbols <- annotation$gene_symbol[
 ]
 
 cat("\nAnnotation matching:\n")
+
 cat(
     "Genes in counts:       ",
     nrow(counts),
     "\n",
     sep = ""
 )
+
 cat(
     "Genes with annotation: ",
-    sum(!is.na(gene_symbols) & gene_symbols != ""),
+    sum(
+        !is.na(gene_symbols) &
+            gene_symbols != ""
+    ),
     "\n",
     sep = ""
 )
+
 cat(
     "Genes without symbol:  ",
-    sum(is.na(gene_symbols) | gene_symbols == ""),
+    sum(
+        is.na(gene_symbols) |
+            gene_symbols == ""
+    ),
     "\n",
     sep = ""
 )
@@ -328,12 +381,14 @@ is_ribo <- !is.na(gene_symbols) &
     )
 
 cat("\nGene classification:\n")
+
 cat(
     "Mitochondrial genes: ",
     sum(is_mito),
     "\n",
     sep = ""
 )
+
 cat(
     "Ribosomal genes:     ",
     sum(is_ribo),
@@ -342,27 +397,37 @@ cat(
 )
 
 cat("\nExample mitochondrial genes:\n")
+
 print(
     head(
-        unique(gene_symbols[is_mito]),
+        unique(
+            gene_symbols[is_mito]
+        ),
         10
     )
 )
 
 cat("\nExample ribosomal genes:\n")
+
 print(
     head(
-        unique(gene_symbols[is_ribo]),
+        unique(
+            gene_symbols[is_ribo]
+        ),
         10
     )
 )
 
 if (sum(is_mito) == 0) {
-    stop("No mitochondrial genes were identified.")
+    stop(
+        "No mitochondrial genes were identified."
+    )
 }
 
 if (sum(is_ribo) == 0) {
-    stop("No ribosomal genes were identified.")
+    stop(
+        "No ribosomal genes were identified."
+    )
 }
 
 
@@ -371,7 +436,11 @@ if (sum(is_ribo) == 0) {
 # ---------------------------------------------------------
 
 count_matrix <- as.matrix(
-    counts[, common_samples, drop = FALSE]
+    counts[
+        ,
+        common_samples,
+        drop = FALSE
+    ]
 )
 
 storage.mode(count_matrix) <- "numeric"
@@ -382,12 +451,20 @@ total_counts <- colSums(
 )
 
 mito_counts <- colSums(
-    count_matrix[is_mito, , drop = FALSE],
+    count_matrix[
+        is_mito,
+        ,
+        drop = FALSE
+    ],
     na.rm = TRUE
 )
 
 ribo_counts <- colSums(
-    count_matrix[is_ribo, , drop = FALSE],
+    count_matrix[
+        is_ribo,
+        ,
+        drop = FALSE
+    ],
     na.rm = TRUE
 )
 
@@ -400,8 +477,18 @@ qc <- data.frame(
     stringsAsFactors = FALSE
 )
 
-qc$MitoPercent <- 100 * qc$Mito / qc$Total
-qc$RiboPercent <- 100 * qc$Ribo / qc$Total
+qc$MitoPercent <- (
+    100 * qc$Mito / qc$Total
+)
+
+qc$RiboPercent <- (
+    100 * qc$Ribo / qc$Total
+)
+
+
+# ---------------------------------------------------------
+# Convert to long format
+# ---------------------------------------------------------
 
 qc_long <- qc %>%
     select(
@@ -411,7 +498,10 @@ qc_long <- qc %>%
         RiboPercent
     ) %>%
     pivot_longer(
-        cols = c(MitoPercent, RiboPercent),
+        cols = c(
+            MitoPercent,
+            RiboPercent
+        ),
         names_to = "Category",
         values_to = "Percent"
     )
@@ -422,15 +512,104 @@ qc_long$Category <- recode(
     RiboPercent = "Ribosomal"
 )
 
-# Preserve sample order
-qc_long$Sample <- factor(
-    qc_long$Sample,
-    levels = common_samples
+
+# ---------------------------------------------------------
+# Order samples by group
+# ---------------------------------------------------------
+
+# Preserve the order in which groups first appear
+# in the metadata.
+group_levels <- unique(
+    qc$Group
 )
 
-# Preserve group information
+# Remove NA groups from the factor levels
+group_levels <- group_levels[
+    !is.na(group_levels)
+]
+
+# Make Group an ordered factor
 qc_long$Group <- factor(
-    qc_long$Group
+    qc_long$Group,
+    levels = group_levels
+)
+
+# Create the sample order:
+#
+#   Group 1
+#       sample A
+#       sample B
+#       sample C
+#
+#   Group 2
+#       sample D
+#       sample E
+#
+#   Group 3
+#       sample F
+#
+# Within each group, samples retain their original
+# order from the counts file.
+sample_order <- qc %>%
+    mutate(
+        Group = factor(
+            Group,
+            levels = group_levels
+        ),
+        SampleOrder = match(
+            Sample,
+            common_samples
+        )
+    ) %>%
+    arrange(
+        Group,
+        SampleOrder
+    ) %>%
+    pull(Sample)
+
+# Remove duplicates while preserving the desired order
+sample_order <- unique(
+    sample_order
+)
+
+# Horizontal ggplot bars are drawn from the bottom
+# upwards according to factor levels. Reverse the
+# desired order so the first group appears at the top.
+qc_long$Sample <- factor(
+    qc_long$Sample,
+    levels = rev(sample_order)
+)
+
+
+# ---------------------------------------------------------
+# Print sample ordering
+# ---------------------------------------------------------
+
+cat("\nSample order used in plot:\n")
+
+sample_order_table <- qc %>%
+    mutate(
+        Group = factor(
+            Group,
+            levels = group_levels
+        ),
+        SampleOrder = match(
+            Sample,
+            common_samples
+        )
+    ) %>%
+    arrange(
+        Group,
+        SampleOrder
+    ) %>%
+    select(
+        Sample,
+        Group
+    )
+
+print(
+    sample_order_table,
+    row.names = FALSE
 )
 
 
@@ -451,20 +630,15 @@ write.csv(
 )
 
 cat("\nQC table written to:\n")
-cat(qc_out, "\n")
+cat(
+    qc_out,
+    "\n"
+)
+
 
 # ---------------------------------------------------------
 # Plot
 # ---------------------------------------------------------
-
-# Horizontal bars make sample names readable when there are
-# many samples.
-
-# Reverse sample order so the first sample appears at the top
-qc_long$Sample <- factor(
-    qc_long$Sample,
-    levels = rev(common_samples)
-)
 
 p <- ggplot(
     qc_long,
@@ -488,7 +662,9 @@ p <- ggplot(
         y = NULL,
         fill = opt$group
     ) +
-    theme_bw(base_size = 11) +
+    theme_bw(
+        base_size = 11
+    ) +
     theme(
         axis.text.y = element_text(
             size = 7
@@ -509,8 +685,13 @@ p <- ggplot(
         )
     )
 
-# Height scales with the number of samples so that sample
-# names remain readable.
+
+# ---------------------------------------------------------
+# Save plot
+# ---------------------------------------------------------
+
+# Height scales with the number of samples so that
+# sample names remain readable.
 plot_height <- max(
     10,
     length(common_samples) * 0.18
@@ -527,7 +708,10 @@ ggsave(
 )
 
 cat("\nPlot written to:\n")
-cat(opt$out, "\n")
+cat(
+    opt$out,
+    "\n"
+)
 
 cat("\nDone.\n")
 

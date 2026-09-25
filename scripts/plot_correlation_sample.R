@@ -152,26 +152,209 @@ ha <- HeatmapAnnotation(
 # ---------------------------
 # 8. Plot heatmap
 # ---------------------------
-png(output_file, width = 900, height = 800, res = 150)
 
-min_cor <- min(cor_mat, na.rm = TRUE)
-max_cor <- max(cor_mat, na.rm = TRUE)
+n_samples <- ncol(cor_mat)
 
-Heatmap(
+# ---------------------------
+# Label font size
+# ---------------------------
+#
+# Use readable font sizes.
+# Do not reduce to 4-5 pt.
+#
+
+if (n_samples <= 30) {
+
+  label_size <- 10
+
+} else if (n_samples <= 60) {
+
+  label_size <- 8
+
+} else if (n_samples <= 100) {
+
+  label_size <- 7
+
+} else {
+
+  label_size <- 6
+
+}
+
+# ---------------------------
+# Figure dimensions
+# ---------------------------
+#
+# Moderate output size.
+# Avoid excessive scaling with n_samples.
+#
+
+fig_width <- 3000
+fig_height <- 2800
+
+# ---------------------------
+# Correlation colour scale
+# ---------------------------
+
+min_cor <- min(
   cor_mat,
+  na.rm = TRUE
+)
+
+max_cor <- max(
+  cor_mat,
+  na.rm = TRUE
+)
+
+mid_cor <- (
+  min_cor +
+    max_cor
+) / 2
+
+# ---------------------------
+# Output
+# ---------------------------
+
+png(
+  filename = output_file,
+  width = fig_width,
+  height = fig_height,
+  res = 150
+)
+
+# ---------------------------
+# Heatmap
+# ---------------------------
+
+ht <- Heatmap(
+
+  cor_mat,
+
   name = "Pearson\ncorrelation",
+
+  # -------------------------
+  # Group annotation
+  # -------------------------
+
   top_annotation = ha,
+
+  # -------------------------
+  # Colour scale
+  # -------------------------
+
   col = colorRamp2(
-    c(min_cor, (min_cor + max_cor)/2, max_cor),
-    c("blue", "white", "red")
+    c(
+      min_cor,
+      mid_cor,
+      max_cor
+    ),
+    c(
+      "blue",
+      "white",
+      "red"
+    )
   ),
+
+  # -------------------------
+  # Clustering
+  # -------------------------
+
   cluster_rows = TRUE,
   cluster_columns = TRUE,
+
+  # -------------------------
+  # BOTH ROW AND COLUMN LABELS
+  # -------------------------
+
   show_row_names = TRUE,
   show_column_names = TRUE,
-  row_names_gp = gpar(fontsize = 9),
-  column_names_gp = gpar(fontsize = 9, rot = 45)
+
+  # -------------------------
+  # FULL LABELS
+  # NO WRAPPING
+  # -------------------------
+
+  row_labels = rownames(cor_mat),
+  column_labels = colnames(cor_mat),
+
+  # -------------------------
+  # ROW LABELS
+  # -------------------------
+
+  row_names_gp = gpar(
+    fontsize = label_size
+  ),
+
+  row_names_rot = 0,
+
+  # -------------------------
+  # COLUMN LABELS
+  # -------------------------
+
+  column_names_gp = gpar(
+    fontsize = label_size
+  ),
+
+  column_names_rot = 45,
+
+  # -------------------------
+  # Heatmap borders
+  # -------------------------
+
+  border = TRUE,
+
+  # -------------------------
+  # Legends
+  # -------------------------
+
+  heatmap_legend_param = list(
+
+    title_gp = gpar(
+      fontsize = 12,
+      fontface = "bold"
+    ),
+
+    labels_gp = gpar(
+      fontsize = 10
+    ),
+
+    grid_width = unit(
+      6,
+      "mm"
+    ),
+
+    grid_height = unit(
+      6,
+      "mm"
+    )
+
+  )
+
 )
+
+# ---------------------------
+# Draw heatmap
+# ---------------------------
+
+draw(
+
+  ht,
+
+  heatmap_legend_side = "right",
+
+  annotation_legend_side = "right",
+
+  padding = unit(
+    c(10, 35, 15, 15),
+    "mm"
+  )
+
+)
+
 dev.off()
 
-cat("✅ Correlation heatmap saved to:", output_file, "\n")
+cat(
+  "✅ Correlation heatmap saved to:",
+  output_file,
+  "\n"
+)

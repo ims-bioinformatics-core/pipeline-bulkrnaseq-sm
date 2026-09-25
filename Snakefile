@@ -71,7 +71,7 @@ sample_check_dir  = os.path.join(RUN_DIR, DIR_FLAG, "sample_check")
 expression_check_dir  = os.path.join(RUN_DIR, DIR_FLAG, "expression_check")
 mapping_check_dir = os.path.join(RUN_DIR, DIR_FLAG, "mapping_check")
 dge_dir = os.path.join(RUN_DIR, DIR_FLAG, "dge")
-
+pathway_dir = os.path.join(RUN_DIR, DIR_FLAG, "pathway")
 
 # -----------------------------
 # Parameters
@@ -97,7 +97,22 @@ dge_cat           = config["dge_cat"]
 dge_comparisons   = config["dge_comparisons"]
 dge_comparison_names = list(dge_comparisons.keys())
 mapping_check_cat = config["mapping_check_cat"]
+sample_check_cat   = config["sample_check_cat"]
+gene_list         = config.get("gene_list", "")
 
+
+# -----------------------------
+# Pathway analysis settings
+# -----------------------------
+
+pathway_lfc_threshold = float(config.get("pathway_lfc_threshold", lfc_threshold))
+pathway_padj_threshold = float(config.get("pathway_padj_threshold", padj_threshold))
+pathway_gsea_fdr = float(config.get("pathway_gsea_fdr", 0.05))
+pathway_organism = config.get("pathway_organism","mouse")
+pathway_databases = config.get("pathway_databases",["GO", "KEGG", "REACTOME"])
+pathway_databases_str = ",".join(pathway_databases)
+pathway_min_genes = int(config.get("pathway_min_genes", 10))
+pathway_max_genes = int(config.get("pathway_max_genes", 500))
 
 # -----------------------------
 # PCA settings
@@ -184,7 +199,7 @@ rule all:
         # Expression check
         expand(os.path.join(expression_check_dir, "{group}", "MA_plot.png"),group=groups),
         expand(os.path.join(expression_check_dir, "{group}", "heatmap_plot.png"),group=groups),
-        
+        expand(os.path.join(expression_check_dir, "{group}", "barplot_genes.png"),group=groups),      
 
         # PCA category plots 
         expand(os.path.join(plot_pca_dir, "{group}", "pca_cat_{col_cat}.png"),group=groups,col_cat=[c.replace(" ", "_") for c in pca_col_cat]),     
@@ -195,7 +210,13 @@ rule all:
         # DGE
         expand(os.path.join(dge_dir, "{group}", "{comparison}", "dge_results.csv"),group=groups,comparison=dge_comparison_names),
         expand(os.path.join(dge_dir, "{group}", "{comparison}", "vst_normalised_counts.csv"),group=groups,comparison=dge_comparison_names),
-        expand(os.path.join(dge_dir, "{group}", "{comparison}", "volcano_{comparison}.png"),group=groups,comparison=dge_comparison_names)
+        expand(os.path.join(dge_dir, "{group}", "{comparison}", "volcano_{comparison}.png"),group=groups,comparison=dge_comparison_names),
+        
+        # PATHWAY
+        expand(os.path.join(pathway_dir, "{group}", "{comparison}", "GO_GSEA.csv"), group=groups, comparison=dge_comparison_names),
+        expand(os.path.join(pathway_dir, "{group}", "{comparison}", "KEGG_GSEA.csv"), group=groups, comparison=dge_comparison_names),
+        expand(os.path.join(pathway_dir, "{group}", "{comparison}", "REACTOME_GSEA.csv"), group=groups, comparison=dge_comparison_names),
+        expand(os.path.join(pathway_dir, "{group}", "{comparison}", "pathway_dotplot.png"), group=groups, comparison=dge_comparison_names),
 
         
 # -----------------------------
@@ -463,7 +484,7 @@ rule sample_check:
         mito_ribo_plot=os.path.join(sample_check_dir, "{group}", "barplot_mito_ribo.png"),
 
     params:
-        dge_cat = config["dge_cat"],
+        sample_check_cat = config["sample_check_cat"],
         dge_comparisons = config["dge_comparisons"],
         dge_comparison_names = list(dge_comparisons.keys())
 
@@ -490,7 +511,7 @@ rule sample_check:
             --counts "{input.counts}" \
             --metadata "{input.metadata}" \
             --annotation "{input.annotation}" \
-            --group "{params.dge_cat}" \
+            --group "{params.sample_check_cat}" \
             --out "{output.corr_plot}"
             
         # -------------------------
@@ -500,7 +521,7 @@ rule sample_check:
             --counts "{input.counts}" \
             --metadata "{input.metadata}" \
             --annotation "{input.annotation}" \
-            --group "{params.dge_cat}" \
+            --group "{params.sample_check_cat}" \
             --out "{output.mito_ribo_plot}"
         """
 
@@ -517,12 +538,14 @@ rule expression_check:
     output:
         expr_plot=os.path.join(expression_check_dir, "{group}", "MA_plot.png"),
         heat_plot=os.path.join(expression_check_dir, "{group}", "heatmap_plot.png"),
+        barplot_genes=os.path.join(expression_check_dir, "{group}", "barplot_genes.png"),
 
     conda:
         "dge_env"
         
     params:
-        dge_cat=dge_cat
+        dge_cat=dge_cat,
+        gene_list=gene_list
 
     shell:
         """
@@ -544,6 +567,15 @@ rule expression_check:
             --annotation "{input.annotation}" \
             --dge_cat "{params.dge_cat}" \
             --out "{output.heat_plot}"
+            
+        # USER-DEFINED GENE EXPRESSION
+        
+        Rscript {SCRIPTS_DIR}/plot_barplot_genes.R \
+            --counts "{input.counts}" \
+            --metadata "{input.metadata}" \
+            --annotation "{input.annotation}" \
+            --genes "{params.gene_list}" \
+            --out "{output.barplot_genes}"  
         """
 
 # -----------------------------
@@ -718,3 +750,65 @@ rule run_dge:
             --padj_threshold "{params.padj_threshold}"
         """
 
+# -----------------------------
+# GSEA pathway analysis
+# -----------------------------
+
+rule run_pathway:
+    input:
+        dge=os.path.join(
+            dge_dir,
+            "{group}",
+            "{comparison}",
+            "dge_results.csv"
+        ),
+        annotation=annotation
+
+    output:
+        go_gsea=os.path.join(
+            pathway_dir,
+            "{group}",
+            "{comparison}",
+            "GO_GSEA.csv"
+        ),
+
+        kegg_gsea=os.path.join(
+            pathway_dir,
+            "{group}",
+            "{comparison}",
+            "KEGG_GSEA.csv"
+        ),
+        reactome_gsea=os.path.join(pathway_dir, "{group}", "{comparison}", "REACTOME_GSEA.csv"),
+        
+        dotplot=os.path.join(
+            pathway_dir,
+            "{group}",
+            "{comparison}",
+            "pathway_dotplot.png"
+        )
+
+    params:
+        organism=pathway_organism,
+        databases=pathway_databases_str,
+        min_genes=pathway_min_genes,
+        max_genes=pathway_max_genes,
+        gsea_fdr=pathway_gsea_fdr
+
+    conda:
+        "dge_env"
+
+    shell:
+        """
+        mkdir -p "{pathway_dir}/{wildcards.group}/{wildcards.comparison}"
+
+        Rscript {SCRIPTS_DIR}/run_gsea_pathway.R \
+            --dge "{input.dge}" \
+            --annotation "{input.annotation}" \
+            --outdir "{pathway_dir}/{wildcards.group}/{wildcards.comparison}" \
+            --comparison "{wildcards.comparison}" \
+            --organism "{params.organism}" \
+            --databases "{params.databases}" \
+            --min_genes "{params.min_genes}" \
+            --max_genes "{params.max_genes}" \
+            --gsea_fdr "{params.gsea_fdr}"
+        """
