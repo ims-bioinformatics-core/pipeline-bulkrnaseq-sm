@@ -1,0 +1,38 @@
+name: pipeline-bulkrnaseq-sm_env
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - snakemake>=7
+  - mamba
+  - fastqc=0.12.1
+  - multiqc=1.30
+  - cutadapt=5.1
+  - star=2.7.11b
+  - samtools=1.22
+  - htslib=1.22
+  - seqtk              
+  - numpy
+  - pandas
+  - matplotlib
+  - scikit-learn
+  - plotly
+  - jinja2
+  - pydantic
+  - polars
+  - pillow
+  - brotli
+  - zlib-ng
+  - libcurl
+  - openssl
+  - bzip2
+  - xz
+  - libpng
+  - freetype
+  - fontconfig
+  - icu
+  - readline
+  - tk
+  - subread

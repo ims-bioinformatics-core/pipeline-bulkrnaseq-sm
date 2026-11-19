@@ -1,0 +1,9 @@
+Barcode,fastq_1,fastq_2
+UDI001,raw_data/SLX-11111.UDI001.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI001.AAA111.r_2.fq.gz
+UDI002,raw_data/SLX-11111.UDI002.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI002.AAA111.r_2.fq.gz
+UDI003,raw_data/SLX-11111.UDI003.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI003.AAA111.r_2.fq.gz
+UDI004,raw_data/SLX-11111.UDI004.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI004.AAA111.r_2.fq.gz
+UDI005,raw_data/SLX-11111.UDI005.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI005.AAA111.r_2.fq.gz
+UDI006,raw_data/SLX-11111.UDI006.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI006.AAA111.r_2.fq.gz
+UDI007,raw_data/SLX-11111.UDI007.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI007.AAA111.r_2.fq.gz
+UDI008,raw_data/SLX-11111.UDI008.AAA111.r_1.fq.gz,raw_data/SLX-11111.UDI008.AAA111.r_2.fq.gz

@@ -1,0 +1,11 @@
+**/.ipynb_checkpoints/
+**/.snakemake/
+
+# SLURM job logs
+slurm-*.out
+
+# Test FASTQs (reads from real human samples): keep out of git
+raw_data/
+raw_data_*/
+
+results_raw_2samples/

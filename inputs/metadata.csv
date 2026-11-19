@@ -1,0 +1,9 @@
+Pool,Barcode,Sequence,Sample name,Condition 1,Condition 2,Batch,Sample type,Sample age,Sample sex
+SLX-11111,UDI001,CCGCGGTT-AGCGCTAG,F1,treated,obese,1,tissue,adult,F
+SLX-11111,UDI002,TTATAACC-GATATCGA,F2,treated,lean,2,tissue,adult,F
+SLX-11111,UDI003,GGACTTGG-CGCAGACG,F3,untreated,obese,1,tissue,adult,F
+SLX-11111,UDI004,AAGTCCAA-TATGAGTA,F4,untreated,lean,2,tissue,adult,F
+SLX-11111,UDI005,ATCCACTG-AGGTGCGT,M1,treated,obese,1,tissue,adult,M
+SLX-11111,UDI006,GCTTGTCA-GAACATAC,M2,treated,lean,2,tissue,adult,M
+SLX-11111,UDI007,CAAGCTAG-ACATAGCG,M3,untreated,obese,1,tissue,adult,M
+SLX-11111,UDI008,TGGATCGA-GTGCGATA,M4,untreated,lean,2,tissue,adult,M
