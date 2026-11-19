@@ -116,8 +116,8 @@ arrow((x, ly), (x + 5, ly), dashed=True, color=C["qc"][1])
 ax.text(x + 6, ly, "QC gate: next step waits for this report", va="center", fontsize=8.5, color=INK)
 
 ax.add_patch(FancyBboxPatch((4, 9.6), 92, 0.08, boxstyle="square,pad=0", fc="#d5dbe2", ec="none"))
-ax.text(4, 2.4, "Run:  sbatch run.sh   (dry run: bash run.sh -n)      Results:  <run_dir>/<dir_flag>/      "
-        "Test data: 8 mouse liver samples (PRJDB17560), about 12 min on 16 CPUs",
+ax.text(4, 2.4, "Run:  sbatch submit_slurm.sh   (dry run: bash run.sh -n)    Results:  <run_dir>/<dir_flag>/    "
+        "Test data: 8 mouse liver samples (PRJDB17560), ~12 min",
         fontsize=8, color=MUTED, va="center", family="DejaVu Sans Mono")
 
 fig.savefig(out)

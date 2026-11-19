@@ -39,9 +39,12 @@ your copy of this repository. Set your SLURM account once in `~/.bashrc`:
 **3. Run:**
 
 ```bash
-bash run.sh -n      # dry run: list the steps without running them
-sbatch run.sh       # run on SLURM (16 CPUs, 64 GB, 4 h by default)
+bash run.sh -n             # dry run: list the steps without running them
+sbatch submit_slurm.sh     # run on SLURM (sapphire, 16 CPUs, 64 GB, 2 h)
 ```
+
+Submit from the pipeline folder; `submit_slurm.sh` calls `run.sh`, which sizes STAR to the
+job's CPUs and memory. Change partition, memory or time in `submit_slurm.sh`.
 
 The repository includes a small **mouse test data set**, so the pipeline runs as soon as
 it's cloned. `raw_data/` holds 8 liver samples from public study DDBJ PRJDB17560 (WT vs
