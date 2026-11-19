@@ -4,7 +4,9 @@ Snakemake pipeline for paired-end bulk RNA-seq on a SLURM cluster: from FASTQ fi
 reports, STAR alignment, a gene-count matrix, PCA, DESeq2 differential expression and GSEA
 pathway analysis.
 
-**Visual overview:** [docs/pipeline_overview.pdf](docs/pipeline_overview.pdf)
+![Pipeline overview](docs/pipeline_overview.svg)
+
+*Printable version: [docs/pipeline_overview.pdf](docs/pipeline_overview.pdf)*
 
 ## Workflow
 

@@ -1,4 +1,4 @@
-"""Draw docs/pipeline_overview.pdf. Usage: python docs/make_overview.py docs/pipeline_overview.pdf"""
+"""Draw the pipeline overview. Usage: python docs/make_overview.py docs/pipeline_overview.pdf  (or .svg / .png)"""
 import sys
 import matplotlib
 matplotlib.use("Agg")
