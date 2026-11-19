@@ -4,8 +4,9 @@
 # SLURM job logs
 slurm-*.out
 
-# Test FASTQs (reads from real human samples): keep out of git
-raw_data/
+# raw_data/ holds the public mouse test set (PRJDB17560) and IS committed.
+# Any other raw_data_*/ folder (full-size downloads, restricted data) stays out of git.
 raw_data_*/
 
-results_raw_2samples/
+# Pipeline outputs
+results_*/

@@ -123,6 +123,10 @@ pipeline-bulkrnaseq-sm/
 └── raw_data/           # FASTQ files (or point filepaths.csv anywhere)
 ```
 
+The repository ships a small **public mouse test set** in `raw_data/` (8 liver samples from
+DDBJ PRJDB17560, downsampled to 500k read pairs; see `raw_data/README_test_data.txt`), with
+matching `inputs/` and a mouse `config.yml`, so the pipeline runs end to end after cloning.
+
 ### 1. `inputs/filepaths.csv`
 
 Three columns: sample ID, R1 path, R2 path. Paths must be absolute.
@@ -199,7 +203,7 @@ with `--config key=value`.
 | `dir_flag` | `results_raw` | Subdirectory of `run_dir` holding this run's results. Change it to keep several runs side by side |
 | `filepaths` | `inputs/filepaths.csv` | Relative to `run_dir` |
 | `metadata` | `inputs/metadata.csv` | Relative to `run_dir` |
-| `star_index` | `/.../ensembl/homo_sapiens/release-113` | Pre-built STAR genome directory |
+| `star_index` | `/.../ensembl/mus_musculus/release-113` | Pre-built STAR genome directory |
 | `annotation` | `/.../gene_annotation.tsv` | Gene annotation TSV |
 
 ### QC and trimming
@@ -484,7 +488,7 @@ Run these manually before or alongside the pipeline:
   `filter_match` with `int(...)`, so `0.1` becomes `0` and those STAR filters are effectively
   disabled. Change them to `float(...)` to apply the configured values.
 - **Pathway analysis is mouse-only** (`org.Mm.eg.db`, KEGG `mmu`). The shipped `config.yml`
-  points at a human STAR index, so `run_pathway` will stop on human data — use
+  uses the mouse test set; on human data `run_pathway` will stop — use
   `--until run_dge` until human support is added. KEGG GSEA also needs internet access at
   run time.
 - **Mito/ribo barplot uses mouse gene symbols** (`^mt-`, `^Rps|^Rpl`); on human data
