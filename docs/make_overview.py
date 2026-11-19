@@ -13,6 +13,7 @@ C = {  # fill, edge
     "input":    ("#eef1f5", "#8a96a6"),
     "process":  ("#e3eefb", "#3b78c2"),
     "qc":       ("#fdf1df", "#d08a1e"),
+    "check":    ("#f1ebfb", "#7b55c7"),
     "analysis": ("#e4f4ea", "#2f8f57"),
 }
 GATE = C["qc"][1]
@@ -88,12 +89,12 @@ box(qx[0], AY, QW, QH, "qc", "multiqc", "MultiQC", ["raw reads", "combined repor
 box(qx[1], BY, QW, QH, "qc", "fastqc_trimmed", "FastQC", ["trimmed reads", "per-sample report"], 9.5)
 box(qx[1], AY, QW, QH, "qc", "multiqc_trimmed", "MultiQC", ["trimmed reads", "combined report"], 9.5)
 box(qx[2], AY, QW, QH, "qc", "multiqc_mapped", "MultiQC", ["STAR logs + counts", "combined report"], 9.5)
-box(qx[2], BY, QW, QH, "qc", "mapping_check", "Python", ["mapping-rate", "barplot"], 9.5)
+box(qx[2], BY, QW, QH, "check", "mapping_check", "Python", ["mapping-rate", "barplot"], 9.5)
 
 cx, CW = [64.75, 78.25, 91.75], 12.5
-box(cx[0], AY, CW, QH, "qc", "sample_check", "R", ["sex (Xist / Y genes)", "correlation, mito/ribo"], 9.5)
+box(cx[0], AY, CW, QH, "check", "sample_check", "R", ["sex (Xist / Y genes)", "correlation, mito/ribo"], 9.5)
 box(cx[1], AY, CW, QH, "qc", "run_pca", "R", ["PCA by metadata", "PCs vs metadata"], 9.5)
-box(cx[2], AY, CW, QH, "qc", "expression_check", "R", ["MA plot, heatmap", "gene_list plots"], 9.5)
+box(cx[2], AY, CW, QH, "check", "expression_check", "R", ["MA plot, heatmap", "gene_list plots"], 9.5)
 
 # raw reads: inputs -> fastqc -> multiqc -> (gate) trim_reads
 elbow([(5.5, MB), (5.5, BY), (B_left[0], BY)])
@@ -125,15 +126,15 @@ bracket(xs[3] - W / 2, xs[5] + WL / 2, Y + H / 2 + 1.2, "once per group  (all sa
 ax.add_patch(FancyBboxPatch((4, 7.3), 92, 0.08, boxstyle="square,pad=0", fc="#d5dbe2", ec="none"))
 ly = 4.6
 x = 4
-for k, label in [("input", "input"), ("process", "processing"), ("qc", "QC step"), ("analysis", "analysis")]:
+for k, label in [("input", "input"), ("process", "processing"), ("qc", "QC report"), ("check", "check plots"), ("analysis", "analysis")]:
     f, e = C[k]
     ax.add_patch(FancyBboxPatch((x, ly - 1), 2.6, 2, boxstyle="round,pad=0,rounding_size=0.4", fc=f, ec=e, lw=1.2))
     ax.text(x + 3.4, ly, label, va="center", fontsize=8.5, color=INK)
-    x += 13
+    x += 11.8
 arrow((x, ly), (x + 5, ly)); ax.text(x + 6, ly, "data flow", va="center", fontsize=8.5, color=INK)
-x += 15
+x += 13.5
 arrow((x, ly), (x + 5, ly), dashed=True, color=GATE)
-ax.text(x + 6, ly, "gate: next step waits for this QC output", va="center", fontsize=8.5, color=INK)
+ax.text(x + 6, ly, "gate: next step waits for this", va="center", fontsize=8.5, color=INK)
 
 ax.text(4, 1.6, "Run:  sbatch submit_slurm.sh   (dry run: bash run.sh -n)    Results:  <run_dir>/<dir_flag>/    "
         "Test data: 8 mouse liver samples (PRJDB17560), ~12 min",
