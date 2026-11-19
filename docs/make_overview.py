@@ -20,12 +20,12 @@ fig = plt.figure(figsize=(11.69, 8.27))
 ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 100); ax.set_ylim(0, 70.7); ax.axis("off")
 
 
-def box(x, y, w, h, kind, title, tool, lines, tool_fs=8.5):
+def box(x, y, w, h, kind, title, tool, lines, tool_fs=8.5, title_fs=10.5):
     f, e = C[kind]
     ax.add_patch(FancyBboxPatch((x - w / 2, y - h / 2), w, h, boxstyle="round,pad=0,rounding_size=1.0",
                                 fc=f, ec=e, lw=1.4))
     top = y + h / 2
-    ax.text(x, top - 1.9, title, ha="center", va="center", fontsize=10.5, weight="bold", color=INK)
+    ax.text(x, top - 1.9, title, ha="center", va="center", fontsize=title_fs, weight="bold", color=INK)
     ax.text(x, top - 4.0, tool, ha="center", va="center", fontsize=tool_fs, color=e, weight="bold")
     ax.text(x, top - 5.6, "\n".join(lines), ha="center", va="top", fontsize=7.6, color=MUTED, linespacing=1.45)
 
@@ -70,17 +70,22 @@ for a, b in zip(xs[:-1], xs[1:]):
     arrow((a + wa / 2, Y), (b - wb / 2, Y))
 
 # --- QC row (row 2) ------------------------------------------------------
-QY, QH, QW = 21, 10.5, 14.5
-qx = [17.75, 35, 52]
+QY, QH, QW = 21, 10.5, 13
+qx = [17.75, 35, 49.5]
 box(qx[0], QY, QW, QH, "qc", "fastqc + multiqc", "raw reads",
     ["per-sample FastQC", "combined MultiQC report"])
 box(qx[1], QY, QW, QH, "qc", "fastqc + multiqc", "trimmed reads",
     ["checks trimming worked", "combined MultiQC report"])
 box(qx[2], QY, QW, QH, "qc", "multiqc_mapped", "+ mapping_check",
     ["STAR log report", "mapping-rate barplot"])
-box(74.5, QY, 25, QH, "qc", "Sample QC and PCA", "sample_check · expression_check · run_pca",
-    ["sex (Xist / Y genes), sample correlation,", "mito/ribo fraction, MA plot, heatmap,",
-     "selected genes, PCA by metadata"], tool_fs=7.6)
+# three separate checks on the count matrix
+cx, CW = [64, 78, 92], 12.5
+box(cx[0], QY, CW, QH, "qc", "sample_check", "R", ["sex (Xist / Y genes)", "sample correlation", "mito / ribo fraction"],
+    title_fs=9.5)
+box(cx[1], QY, CW, QH, "qc", "run_pca", "R", ["PCA coloured by", "each metadata column", "PCs vs metadata"],
+    title_fs=9.5)
+box(cx[2], QY, CW, QH, "qc", "expression_check", "R", ["MA plot", "expression heatmap", "gene_list plots"],
+    title_fs=9.5)
 
 top = QY + QH / 2
 arrow((xs[0] + 3, Y - H / 2), (qx[0] - 3, top))                       # inputs -> raw QC
@@ -88,7 +93,13 @@ arrow((qx[0] + 3, top), (xs[1] - 3, Y - H / 2), dashed=True, color=C["qc"][1])  
 arrow((xs[1] + 3, Y - H / 2), (qx[1] - 3, top))                       # trim -> trimmed QC
 arrow((qx[1] + 3, top), (xs[2] - 3, Y - H / 2), dashed=True, color=C["qc"][1])  # gate -> STAR
 arrow((xs[2] + 3, Y - H / 2), (qx[2] - 1, top))                       # STAR -> mapped QC
-arrow((xs[3] + 3, Y - H / 2), (67, top))                              # counts -> sample QC
+# counts -> each check, through a shared bus line
+bus = 29.3
+ax.plot([xs[3], xs[3], cx[-1]], [Y - H / 2, bus, bus], color=INK, lw=1.3, solid_joinstyle="miter")
+for c in cx:
+    arrow((c, bus), (c, top))
+# run_pca waits for sample_check
+arrow((cx[0], QY - QH / 2), (cx[1], QY - QH / 2), dashed=True, color=C["qc"][1], rad=0.45)
 
 # --- scope brackets ------------------------------------------------------
 def bracket(x0, x1, y, label):
